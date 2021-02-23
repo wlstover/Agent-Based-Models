@@ -80,7 +80,11 @@ class ZoningModel(Model):
             self.grid.place_agent(d, (x, y))
 
         # Initialize development of cells
-        for cell in np.random.choice([cell for cell in self.grid], self.num_developed, replace=False):
+        cells = [cell for cell in self.grid]
+        cell_choice = np.random.choice(len(cells), self.num_developed, replace=False)
+        developed_cells = [cells[i] for i in cell_choice]
+
+        for cell in developed_cells:
             dtag = self.get_Cell_Tag(cell)
             dtag.set_Development(self)
 
@@ -206,7 +210,9 @@ class ZoningModel(Model):
         # Destroy five random properties at a time
         # This staggers out destruction to smooth out large spikes of destruction
         if len(vacant_cells) > 5:
-            for cell in np.random.choice(vacant_cells, 5):
+            vacant_cell_choices = np.random.choice(len(vacant_cells), 5)
+            destroyed_cells = [vacant_cells[i] for i in vacant_cell_choices]
+            for cell in destroyed_cells:
                 dtag = self.get_Cell_Tag(cell)
                 dtag.destroy_Development(self)
                 self.vacancy_rate += 1
