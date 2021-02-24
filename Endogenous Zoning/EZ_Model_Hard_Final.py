@@ -302,7 +302,7 @@ class ZoningModel(Model):
             a.committee = False
         occupying_agents = [a for a in self.schedule.agents if self.check_Occupied(a.pos)]
         if len(occupying_agents) < self.committee_size:
-            for a in np.random.choice(self.schedule.agents, self.committee_size):
+            for a in np.random.choice(self.schedule.agents, int(self.committee_size)):
                 a.committee = True
                 self.committee_agents.append(a)
         else:
@@ -581,11 +581,19 @@ def get_Average_Agent_Budget(model):
 
 # Retrieve average payoff for homeowners
 def get_Average_Homeowner_Payoff(model):
-    return np.mean([((a.check_Value(a.pos)) / a.wealth) for a in model.schedule.agents if a.type == 'homeowner' and a.get_Cell_Tag(a.pos).occupied])
+    payoff = np.mean([((a.check_Value(a.pos)) / a.wealth) for a in model.schedule.agents if a.type == 'homeowner' and a.get_Cell_Tag(a.pos).occupied])
+    if math.isnan(payoff):
+        return 0
+    else:
+        return payoff
 
 # Retrieve average payoff for reters
 def get_Average_Renter_Payoff(model):
-    return np.mean([((a.budget - a.check_Rent(a.pos)) / a.budget) for a in model.schedule.agents if a.type == 'renter' and a.get_Cell_Tag(a.pos).occupied])
+    payoff = np.mean([((a.budget - a.check_Rent(a.pos)) / a.budget) for a in model.schedule.agents if a.type == 'renter' and a.get_Cell_Tag(a.pos).occupied])
+    if math.isnan(payoff):
+        return 0
+    else:
+        return payoff
 
 # Retrieve number of homeowners
 def get_Homeowner_Number(model):
